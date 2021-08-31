@@ -248,9 +248,9 @@ def getzi():
     notice_date = re.findall('"NoticeDate":"(.+?)",', anns[0])[0][:10]
     notice_content = re.findall('"NoticeContent":"(.+?)"', anns[0])[0]
 
-    print(notice_title.group(1))
-    print(notice_url.group(1))
-    print(notice_date)
+    #print(notice_title.group(1))
+    #print(notice_url.group(1))
+    #print(notice_date)
 
 
  
