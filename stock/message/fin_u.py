@@ -2,16 +2,8 @@
 # -*- coding:UTF-8 -*-
 
 # 20210729更新，从name.txt中读取需要搜索股票的名称
+# 20210901更新，更新直接通过 URL 获取信息，不用selenium
 #
-#
-
-from selenium import webdriver  # 用来驱动浏览器的
-#from selenium.webdriver import ActionChains  # 破解滑动验证码的时候用的 可以拖动图片
-from selenium.webdriver.common.by import By  # 按照什么方式查找，By.ID,By.CSS_SELECTOR
-from selenium.webdriver.common.keys import Keys  # 键盘按键操作
-from selenium.webdriver.support import expected_conditions as EC  # 和下面WebDriverWait一起用的
-from selenium.webdriver.support.wait import WebDriverWait  # 等待页面加载某些元素
-from selenium.webdriver.chrome.service import Service     # webdriver 服务，关闭浏览器后在关闭服务--》实现完全关闭
 
 import time
 import datetime
@@ -37,85 +29,8 @@ class app:
     def __init__(self):
         self.east_url = "https://www.eastmoney.com/"
 
-    # 打开webdriver服务和chrome浏览器
-    def open_chrome(self):
-
-        # 无窗口启动设置
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless') #无头启动，无窗口加载
-        #options.add_argument('window-size=1920x3000') #指定浏览器分辨率
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument("service_args=['–ignore-ssl-errors=true', '–ssl-protocol=TLSv1']")
-        options.add_argument('--disable-gpu') #不开启gpu加速
-        options.add_argument('--hide-scrollbars') #隐藏滚动条, 应对一些特殊页面
-        options.add_argument('blink-settings=imagesEnabled=false') #不加载图片, 提升速度
-          
-        # 东方财富网主页
-        #east_url = "https://www.eastmoney.com/"
-
-        # 开启webdriver服务
-        c_service = Service('/usr/bin/chromedriver')
-        c_service.command_line_args()
-        c_service.start()
-
-        try:
-            # 打开浏览器
-            driver = webdriver.Chrome(executable_path = "/usr/bin/chromedriver", options = options)
-            driver.implicitly_wait(10)
-            driver.get(self.east_url)
-
-            #找到输入框
-            input_tag = driver.find_element_by_id("code_suggest")
-
-            # 进入所选股票页面
-            # 如果本次不输入内容搜素，直接Enter进入后，搜素框ID="searchSuggest"
-            # 如果本次输入内容搜素，Enter进入后，搜素框ID="search_key"
-            # 保证多股票搜索，随意输入搜索内容进入
-            input_tag.send_keys("大连圣亚")
-            input_tag.send_keys(Keys.ENTER)
-
-            #所有窗口
-            all_handles = driver.window_handles
-            #当前窗口
-            east_window = driver.current_window_handle
-            # 切换窗口
-            for handle in all_handles:
-                if handle != east_window:
-                    #切换至另一窗口
-                    driver.switch_to.window(handle)
-
-        
-        except:
-            # 退出Chrome，然后在重新打开
-            driver.quit()
-            # 重新打开进入
-            driver = webdriver.Chrome(executable_path = "/usr/bin/chromedriver", options = options)
-            driver.implicitly_wait(10)
-            driver.get(self.east_url)
-            input_tag = driver.find_element_by_id("code_suggest")
-            input_tag.send_keys("大连圣亚")
-            input_tag.send_keys(Keys.ENTER)
-
-            # 窗口切换
-            all_handles = driver.window_handles
-            east_window = driver.current_window_handle
-            for handle in all_handles:
-                if handle != east_window:
-                    driver.switch_to.window(handle)
-
-        finally:
-            pass
-        
-        return (driver, c_service)
-
     def checkupdate(self, stocks):
         
-        # 打开浏览器和webdriver服务
-        driver_and_c_service = self.open_chrome()
-        driver = driver_and_c_service[0]
-        c_service = driver_and_c_service[1]
-
         # 接受信息的变量
         messages = ""
 
@@ -125,8 +40,8 @@ class app:
             try:
 
                 # 获取单支股票的资讯和公告更新情况
-                message = self.message_send(stock, self.get_message(driver, stock))
-git
+                message = self.message_send(stock, self.get_message(stock))
+
                 # 如果有更新，统计更新信息
                 if message != "":
                     messages = messages + message
@@ -134,31 +49,16 @@ git
                     pass
 
                 # 获取一支股票资料后等10秒
-                time.sleep(10)
-            except:
-                # 关闭浏览器
-                driver.quit()
-                # 关闭webdriver 服务，关闭进程
                 time.sleep(2)
-                c_service.stop()
-
-                # 重新打开chrome和webdriver服务
-                driver_and_c_service = self.open_chrome()
-                driver = driver_and_c_service[0]
-                c_service = driver_and_c_service[1]
+            except:
 
                 continue
                 
             finally:
                 pass
 
-        # driver.close()无法关闭进程，使用driver.quit()
-        # 本次全部股票资讯和公告全部搜素完毕后，关闭全部浏览器窗口
-        driver.quit()    
-
         # 关闭webdriver 服务，关闭进程
         time.sleep(2)
-        c_service.stop()  
 
         # 如果资讯和公告有更新，加上最后格式
         if messages != "":
@@ -171,126 +71,184 @@ git
         # 将所有股票公告和资讯更新情况发送email
         self.email_send(messages)
 
-    # 获取股票最新资讯和公告情况
-    def get_message(self, driver, stock):    
+    def get_message(self, stock):
+        # 获取最新资讯和公告
 
-        # 资讯板块查找是否有最新
-                    
+        #stock = "大连圣亚"
+        # 资讯板块查找是否有最新                
         print(stock, ", Searching now ......", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
-        ####################################################
-        # 抓取资讯内容
-        # 等待搜素网页刷新出来
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "search_key")))
+        ######################################################################
+        # 公告和资讯网址
+        # 公告地址
+        url_ann_base = "https://searchapi.eastmoney.com/bussiness/Web/GetSearchList?"
 
-        #找到搜素页面的输入框
-        input_search_tag = driver.find_element_by_id("search_key")
+        # 资讯地址
+        url_cms_base = "https://searchapi.eastmoney.com/bussiness/Web/GetCMSSearchList?"
 
-        # 清空输入框内容
-        input_search_tag.clear()
+        # 传入的参数
+        # 页数，共用，都只查找第一页就可以
+        page = 1
+        # 传入的  cb 参数，公告和资讯可以共用
+        cb_con = "jQuery" + str(random.randint(35101808371915740692, 35109802815209746756)) + "_" + str(int(time.time()*1000))
+        # 公告的参数
+        param_ann = {
+            "cb" : cb_con,
+            "keyword" : stock, 
+            "type" : "401", 
+            "pageindex" : page,
+            "pagesize" : "10",
+            "name" : "normal",
+            "_" : int(time.time()*1000)
+        }
+        # 资讯的参数
+        param_cms = {
+            "cb" : cb_con,
+            "keyword" : stock, 
+            "type" : "8193", 
+            "pageindex" : page,
+            "pagesize" : "10",
+            "name" : "web",
+            "_" : int(time.time()*1000)
+        }
 
-        # 输入要搜素的股票，进入所选股票页面
-        input_search_tag.send_keys(stock)
-        input_search_tag.send_keys(Keys.ENTER)
+        # 构造公告连接地址
+        url_ann = url_ann_base + urlencode(param_ann)
+        # 构造资讯连接地址
+        url_cms = url_cms_base + urlencode(param_cms)
 
-        # 等待5秒
-        time.sleep(5)
+        #########################################################
+        # 请求头及相关参数
+        # 常用 UA
+        pc_agent = [
+            "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
+            "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0);",
+            "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",
+            "Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",
+            "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; en) Presto/2.8.131 Version/11.11",
+            "Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Maxthon 2.0)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; TencentTraveler 4.0)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; The World)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SE 2.X MetaSr 1.0; SE 2.X MetaSr 1.0; .NET CLR 2.0.50727; SE 2.X MetaSr 1.0)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Avant Browser)",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36",
+            "Mozilla/5.0 (X11; Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
+        ]
 
-        # 等待资讯网页刷新出来
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.LINK_TEXT, "资讯")))
+        # 随机选择一个UA
+        agent = random.choice(pc_agent)
 
-        # 进入资讯版块
-        driver.find_element_by_link_text("资讯").click()
+        # 构造头部文件
+        headers = {
+            'User-Agent': agent,
+            'Referer': 'https://so.eastmoney.com/',
+            'Accept': '*/*',
+            'Connection': 'keep-alive',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+        }
 
-        # 等待news_item加载完成
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "news_item")))
-        #driver.implicitly_wait(5)
-
-        # 抓取news_item 元素
-        news_list = driver.find_elements_by_class_name("news_item")
-
-        # 新资讯列表
-        news_new = []
-
-        for news in news_list:
-            # 每条资讯的发布日期，上市公司会当晚发出第二天的公告，发布时间为第二天的日期
-            # 将资讯的时间的年、月、日按照str格式分隔
-            news_str_date = news.find_element_by_class_name("news_item_time").get_attribute("textContent")[:10].split("-")
-            # 把年月日转化为datetime格式的日期
-            news_date = datetime.date(int(news_str_date[0]), int(news_str_date[1]), int(news_str_date[2]))
-            
-            # 今天日期,换成datetime处理， 用于比较时间先后，
-            #today_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            # 获取datetime格式的日期
-            today_date = datetime.date.today()
-            
-            # 判断今天是否有新的资讯, 如果资讯的日期>=今天的日期，则有新公告        
-            if news_date >= today_date:
-                #print("今天有新的资讯！")
-                # 获取新资讯的标题
-                news_title = news.find_element_by_class_name("news_item_t").get_attribute("textContent")
-                # 获取资讯内容快照,暂时不用
-                #news_content = news.find_element_by_class_name("news_item_c").get_attribute("textContent")
-                # 获取新资讯的连接
-                #news_link = news.find_element_by_xpath("//a[@target='_blank']").get_attribute("href")       # xpath 方法
-                news_link = news.find_element_by_class_name("news_item_url").get_attribute("textContent")    # 寻找元素方法
-                #print("资讯标题：", news_title)
-                #print("资讯内容：", news_content)
-                #print("资讯地址：", news_link)
-
-                # 写入内容中暂没包含 内容快照
-                news_new.append([news_title, news_link])
-            else:
-                pass
-
-        # 等待10秒
-        time.sleep(10)
-
-        ################################################
-        # 抓取公告内容
-        # 等待网页刷新出来
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.LINK_TEXT, "公告")))
-        # 进入公告版块
-        driver.find_element_by_link_text("公告").click()
-
-        # 等待notice_item加载完成
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "notice_item")))
-        #driver.implicitly_wait(5)
-
-        # 抓取notice_item 元素
-        notice_list = driver.find_elements_by_class_name("notice_item")
+        ########################################################
+        # 爬取最新公告内容和链接
 
         # 新公告列表
         notice_new = []
 
-        for notice in notice_list:
-            # 每条公告的发布日期，上市公司会当晚发出第二天的公告，发布时间为第二天的日期
-            # 将公告的时间的年、月、日按照str格式分隔
-            notice_str_date = notice.find_element_by_class_name("notice_item_time").get_attribute("textContent")[:10].split("-")
-            # 把年月日转化为datetime格式的日期
-            notice_date = datetime.date(int(notice_str_date[0]), int(notice_str_date[1]), int(notice_str_date[2]))
-            
-            # 今天日期,换成datetime处理， 用于比较时间先后，上市公司会在当晚发布第二天的公告，且该公告的发布时间会是第二天的日期
-            #today_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        # 公告请求
+        req = urllib.request.Request(url_ann, headers = headers)
+        # 获得网址内容
+        con = urllib.request.urlopen(req).read()
+        # 获取内存中的二进制字节
+        buff = BytesIO(con)
+        # 解压
+        f = gzip.GzipFile(fileobj = buff)
+        # 解码
+        content = f.read().decode('utf-8')
+        # 清洗无用字符
+        anns = content.split("[{")[1].split("}]")[0].split("},{")
+
+        for ann in anns:
+
+            # re.match 从字符串的开始匹配，开始没有则 匹配失败
+            # re.search 在整个字符串匹配，知道找到一个匹配的
+            # re.findall 匹配整个字符串所有可匹配的
+
+            # 公告的日期
+            notice_date_str = re.findall('"NoticeDate":"(.+?)",', ann)[0][:10]
+            # 日期转化为datetime 格式的日期
+            date_split = notice_date_str.split("-")
+            notice_date = datetime.date(int(date_split[0]), int(date_split[1]), int(date_split[2]))
+
             # 获取datetime格式的日期
             today_date = datetime.date.today()
-            
-            # 判断今天是否有新的公告, 如果公告的日期>=今天的日期，则有新公告        
+
             if notice_date >= today_date:
-                #print("今天有新的公告了！")
-                # 获取新资讯的标题
-                notice_title = notice.find_element_by_class_name("notice_item_t").get_attribute("textContent")
-                # 获取资讯快照，暂时不用
-                #notice_content = notice.find_element_by_class_name("notice_item_c").get_attribute("textContent")
-                # 获取新资讯的连接
-                #news_link = news.find_element_by_xpath("//a[@target='_blank']").get_attribute("href")       # xpath 方法
-                notice_link = notice.find_element_by_class_name("notice_item_link").get_attribute("textContent")    # 寻找元素方法
 
-                # 将最新的资讯和公告写入列表
-                notice_new.append([notice_title, notice_link])
+                # 公告标题
+                notice_title = re.search('"NoticeTitle":"(.+?)",', ann)
+                # 公告的网址
+                notice_link = re.search('"Url":"(.+?)",', ann)
+                # 公告的内容摘要
+                notice_content = re.findall('"NoticeContent":"(.+?)"', ann)
 
-            else:
-                pass
+                # 写入内容中暂没包含 内容快照
+                notice_new.append([notice_title.group(1), notice_link.group(1)])
+
+        ########################################################
+        # 爬取最新资讯内容和链接
+
+        # 新资讯列表
+        news_new = []
+
+        # 公告请求
+        req = urllib.request.Request(url_cms, headers = headers)
+        # 获得网址内容
+        con = urllib.request.urlopen(req).read()
+        # 获取内存中的二进制字节
+        buff = BytesIO(con)
+        # 解压
+        f = gzip.GzipFile(fileobj = buff)
+        # 解码
+        content = f.read().decode('utf-8')
+        # 清洗无用字符
+        newses = content.split("[{")[1].split("}]")[0].split("},{")
+
+        for news in newses:
+
+            # re.match 从字符串的开始匹配，开始没有则 匹配失败
+            # re.search 在整个字符串匹配，知道找到一个匹配的
+            # re.findall 匹配整个字符串所有可匹配的
+
+            # 公告的日期
+            news_date_str = re.findall('"Art_CreateTime":"(.+?)",', news)[0][:10]
+            # 日期转化为datetime 格式的日期
+            date_split = news_date_str.split("-")
+            news_date = datetime.date(int(date_split[0]), int(date_split[1]), int(date_split[2]))
+
+            # 获取datetime格式的日期
+            today_date = datetime.date.today()
+
+            if news_date >= today_date:
+
+                # 公告标题
+                news_title = re.search('"Art_Title":"(.+?)",', news)
+                # 公告的网址
+                news_link = re.search('"Art_UniqueUrl":"(.+?)",', news)
+                # 公告的内容摘要
+                news_content = re.findall('"Art_Content":"(.+?)"', news)
+
+                # 写入内容中暂没包含 内容快照
+                news_new.append([news_title.group(1), news_link.group(1)])
 
         # 返回公告和资讯元组
         return (news_new, notice_new)
@@ -340,7 +298,6 @@ git
         # 以日期为名创建text文件
         file_path = path + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())[:10] + ".txt"
         #内容为上述email_send()处理后的内容
-        #messages = "hello world"
 
         # windows 上的测试路径
         #path = 'D:\\code\\text\\'
@@ -404,7 +361,7 @@ git
             # 发送邮箱
             sender = 'admin@pooper.tk'
             # 接收邮箱
-            receivers = ['8780037@qq.com', '68332309@qq.com', 'admin@pooper.tk']
+            receivers = ['admin@pooper.tk']
             # 发送邮件主题
             subject = '关注的股票资讯和公告更新情况-' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
@@ -439,9 +396,6 @@ git
         # 一直循环
         while True:
 
-            # 从 name.txt 文件中读取需要获取信息的股票名称，以方面更改搜索股票的名称
-            #stocks = ["大连圣亚", "捷捷微电", "当升科技"]
-
             # name.txt文件地址，windows测试地址
             #text_path = "D:\\code\\name.txt"
 
@@ -470,8 +424,8 @@ git
             else:
                 # 检查更新股票资讯和公告情况，并对更新资讯和公告大邮件提醒
                 self.checkupdate(stocks)
-                # 每隔30分钟搜索一次
-                time.sleep(1800)
+                # 每隔60分钟搜索一次
+                time.sleep(3600)
                 
 # 主程序,运行
 if __name__ == '__main__':

@@ -4,6 +4,7 @@
 import urllib.request
 from urllib.parse import urlencode
 import time
+import datetime
 import random
 import re
 import math
@@ -73,7 +74,8 @@ def getMsg():
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Avant Browser)",
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0"
+        "Mozilla/5.0 (X11; Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0", 
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
     ]
 
     # 随机选择一个UA
@@ -198,37 +200,100 @@ def to_0(data):
     return data
 
 def getzi():
+    # 获取最新资讯和公告
 
+    stock = "大连圣亚"
+    # 资讯板块查找是否有最新                
+    print(stock, ", Searching now ......", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+
+######################################################################
+    # 公告和资讯网址
+    # 公告地址
     url_ann_base = "https://searchapi.eastmoney.com/bussiness/Web/GetSearchList?"
-    url_cms_base = "https://searchapi.eastmoney.com/bussiness/Web/GetCMSSearchList?"
-    page = 1
-    cb_con = "jQuery" + str(random.randint(35101808371915740692, 35109802815209746756)) + "_" + str(int(time.time()*1000))
 
+    # 资讯地址
+    url_cms_base = "https://searchapi.eastmoney.com/bussiness/Web/GetCMSSearchList?"
+
+    # 传入的参数
+    # 页数，共用，都只查找第一页就可以
+    page = 1
+    # 传入的  cb 参数，公告和资讯可以共用
+    cb_con = "jQuery" + str(random.randint(35101808371915740692, 35109802815209746756)) + "_" + str(int(time.time()*1000))
+    # 公告的参数
     param_ann = {
         "cb" : cb_con,
-        "keyword" : "大连圣亚", 
+        "keyword" : stock, 
         "type" : "401", 
         "pageindex" : page,
         "pagesize" : "10",
         "name" : "normal",
         "_" : int(time.time()*1000)
     }
+    # 资讯的参数
+    param_cms = {
+        "cb" : cb_con,
+        "keyword" : "大连圣亚", 
+        "type" : "8193", 
+        "pageindex" : page,
+        "pagesize" : "10",
+        "name" : "web",
+        "_" : int(time.time()*1000)
+    }
 
-    # 构造连接地址
-    url = url_ann_base + urlencode(param_ann)
-    print(url)
+    # 构造公告连接地址
+    url_ann = url_ann_base + urlencode(param_ann)
+    # 构造资讯连接地址
+    url_cms = url_cms_base + urlencode(param_cms)
+
+#########################################################
+    # 请求头及相关参数
+    # 常用 UA
+    pc_agent = [
+        "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
+        "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
+        "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0);",
+        "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)",
+        "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",
+        "Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",
+        "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; en) Presto/2.8.131 Version/11.11",
+        "Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Maxthon 2.0)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; TencentTraveler 4.0)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; The World)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SE 2.X MetaSr 1.0; SE 2.X MetaSr 1.0; .NET CLR 2.0.50727; SE 2.X MetaSr 1.0)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Avant Browser)",
+        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
+    ]
+
+    # 随机选择一个UA
+    agent = random.choice(pc_agent)
+
     # 构造头部文件
     headers = {
-        'User-Agent': "Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",
-        'Referer': 'http://quote.eastmoney.com/',
+        'User-Agent': agent,
+        'Referer': 'https://so.eastmoney.com/',
         'Accept': '*/*',
         'Connection': 'keep-alive',
         'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Encoding': 'gzip, deflate, br',
     }
 
-    # 请求
-    req = urllib.request.Request(url, headers = headers)
+########################################################
+    # 爬取最新公告内容和链接
+
+    # 新公告列表
+    notice_new = []
+
+    # 公告请求
+    req = urllib.request.Request(url_ann, headers = headers)
     # 获得网址内容
     con = urllib.request.urlopen(req).read()
     # 获取内存中的二进制字节
@@ -240,19 +305,79 @@ def getzi():
     # 清洗无用字符
     anns = content.split("[{")[1].split("}]")[0].split("},{")
 
-    # re.match 从字符串的开始匹配，开始没有则 匹配失败
-    # re.search 在整个字符串匹配，知道找到一个匹配的
-    # re.findall 匹配整个字符串所有可匹配的
-    notice_title = re.search('"NoticeTitle":"(.+?)",', anns[0])
-    notice_url = re.search('"Url":"(.+?)",', anns[0])
-    notice_date = re.findall('"NoticeDate":"(.+?)",', anns[0])[0][:10]
-    notice_content = re.findall('"NoticeContent":"(.+?)"', anns[0])[0]
+    for ann in anns:
 
-    #print(notice_title.group(1))
-    #print(notice_url.group(1))
-    #print(notice_date)
+        # re.match 从字符串的开始匹配，开始没有则 匹配失败
+        # re.search 在整个字符串匹配，知道找到一个匹配的
+        # re.findall 匹配整个字符串所有可匹配的
 
+        # 公告的日期
+        notice_date_str = re.findall('"NoticeDate":"(.+?)",', ann)[0][:10]
+        # 日期转化为datetime 格式的日期
+        date_split = notice_date_str.split("-")
+        notice_date = datetime.date(int(date_split[0]), int(date_split[1]), int(date_split[2]))
 
+        # 获取datetime格式的日期
+        today_date = datetime.date.today()
+
+        if notice_date >= today_date:
+
+            # 公告标题
+            notice_title = re.search('"NoticeTitle":"(.+?)",', ann)
+            # 公告的网址
+            notice_link = re.search('"Url":"(.+?)",', ann)
+            # 公告的内容摘要
+            notice_content = re.findall('"NoticeContent":"(.+?)"', ann)
+
+            # 写入内容中暂没包含 内容快照
+            notice_new.append([notice_title.group(1), notice_link.group(1)])
+########################################################
+    # 爬取最新资讯内容和链接
+
+    # 新资讯列表
+    news_new = []
+
+    # 公告请求
+    req = urllib.request.Request(url_cms, headers = headers)
+    # 获得网址内容
+    con = urllib.request.urlopen(req).read()
+    # 获取内存中的二进制字节
+    buff = BytesIO(con)
+    # 解压
+    f = gzip.GzipFile(fileobj = buff)
+    # 解码
+    content = f.read().decode('utf-8')
+    # 清洗无用字符
+    newses = content.split("[{")[1].split("}]")[0].split("},{")
+
+    for news in newses:
+
+        # re.match 从字符串的开始匹配，开始没有则 匹配失败
+        # re.search 在整个字符串匹配，知道找到一个匹配的
+        # re.findall 匹配整个字符串所有可匹配的
+
+        # 公告的日期
+        news_date_str = re.findall('"Art_CreateTime":"(.+?)",', news)[0][:10]
+        # 日期转化为datetime 格式的日期
+        date_split = news_date_str.split("-")
+        news_date = datetime.date(int(date_split[0]), int(date_split[1]), int(date_split[2]))
+
+        # 获取datetime格式的日期
+        today_date = datetime.date.today()
+
+        if news_date >= today_date:
+
+            # 公告标题
+            news_title = re.search('"Art_Title":"(.+?)",', news)
+            # 公告的网址
+            news_link = re.search('"Art_UniqueUrl":"(.+?)",', news)
+            # 公告的内容摘要
+            news_content = re.findall('"Art_Content":"(.+?)"', news)
+
+            # 写入内容中暂没包含 内容快照
+            news_new.append([news_title.group(1), news_link.group(1)])
+
+    print(notice_new, news_new)
  
 if __name__ == '__main__':
     getzi()
