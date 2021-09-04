@@ -248,10 +248,17 @@ class app:
             'Accept-Encoding': 'gzip, deflate'
         }
 
-        # 请求
-        request = urllib.request.Request(url, headers = headers)
-        # 获取内容
-        con = urllib.request.urlopen(request).read().decode("utf8")
+        try:
+            # 请求
+            request = urllib.request.Request(url, headers = headers)
+            # 获取内容
+            con = urllib.request.urlopen(request, timeout=5).read().decode("utf8")
+        except:
+            # 请求
+            request = urllib.request.Request(url, headers = headers)
+            # 获取内容
+            con = urllib.request.urlopen(request, timeout=5).read().decode("utf8")
+            
         # 总页数
         total = int(re.findall('"total":(.*?),',con)[0])
         pages = math.ceil(total/20)
@@ -288,12 +295,12 @@ class app:
                 # 向地址发出响应
                 request = urllib.request.Request(url, headers = headers)
                 # 获取网页内容
-                con = urllib.request.urlopen(request).read().decode("utf8")
+                con = urllib.request.urlopen(request, timeout=5).read().decode("utf8")
             except:
                 # 向地址发出响应
                 request = urllib.request.Request(url, headers = headers)
                 # 获取网页内容
-                con = urllib.request.urlopen(request).read().decode("utf8")
+                con = urllib.request.urlopen(request, timeout=5).read().decode("utf8")
 
 
 
@@ -541,12 +548,41 @@ class app:
 
         return trade_day
 
+    # 前提：今天是交易日
+    # 判断数据库中是否已经有今天的数据表（主要防止一次爬取数据不成功）服务器设置隔半个小时运行一次 
+    def isExist(self):
+        db = pymysql.connect(host="localhost", user="root", password="123456",database="stock", charset="utf8")
+
+        # 使用 cursor() 方法创建一个游标对象 cursor
+        cursor = db.cursor()
+        # 查询表格
+        order_show = "show tables;"
+        cursor.execute(order_show)
+        tables_list = cursor.fetchall()
+        # 今天的数据表名称
+        tab_today = "data" + self.tradingday().strftime("%Y%m%d")
+
+        # 关闭光标对象
+        cursor.close()
+         
+        # 关闭数据库连接
+        db.close()
+
+        # 今天的数据是否存在，存在返回 True， 不存在则返回 False
+        if tuple((tab_today,)) in tables_list:
+            return True
+        else:
+            return False
+
     def main(self):
 
         print("I am working now! -- ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
         if datetime.date.today() == self.tradingday():
-            self.operatTable(self.getMsg())
-            print("I have got the data of the all stocks today! -- ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+            if self.isExist():
+                print("Data exist already today! -- ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+            else:
+                self.operatTable(self.getMsg())
+                print("I have got the data of the all stocks today! -- ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
         else:
             print("Today is not trading day! -- ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 

@@ -722,7 +722,7 @@ class StockAnalysis:
         smtpserver = 'mail.pooper.tk'
         # 发送邮箱用户/密码
         user = 'admin'
-        password = '123456'
+        password = 'zzg4542431'
         # 发送邮箱
         sender = 'admin@pooper.tk'
         # 接收邮箱

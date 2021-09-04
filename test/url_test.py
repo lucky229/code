@@ -378,8 +378,26 @@ def getzi():
             news_new.append([news_title.group(1), news_link.group(1)])
 
     print(notice_new, news_new)
- 
+
+def trytest():
+
+    url = "http://www.baidu.com"
+    # 构造头部文件
+    headers = {
+        'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+        'Referer': 'https://so.eastmoney.com/',
+        'Accept': '*/*',
+        'Connection': 'keep-alive',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+    }
+
+    # 公告请求
+    req = urllib.request.Request(url, headers = headers)
+    con = urllib.request.urlopen(req, timeout=5)
+    print(con.getcode())
+
 if __name__ == '__main__':
-    getzi()
+    trytest()
 
 

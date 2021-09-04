@@ -283,9 +283,29 @@ class app:
         self.operatTable(self.getData())
         #self.getData()
 
+   # 前提：今天是交易日
+   # 判断数据库中是否已经有今天的数据表（主要防止一次爬取数据不成功）服务器设置隔半个小时运行一次 
+    def isExist(self):
+        db = pymysql.connect(host="localhost", user="root", password="123456",database="stock", charset="utf8")
+
+        # 使用 cursor() 方法创建一个游标对象 cursor
+        cursor = db.cursor()
+
+        order_show = "show tables;"
+        cursor.execute(order_show)
+        tables_list = cursor.fetchall()
+        print(tables_list)
+
+        tab_today = "data" + self.tradingday().strftime("%Y%m%d")
+
+        if tuple((tab_today,)) in tables_list:
+            return True
+        else:
+            return False
+
 # 主程序,运行
 if __name__ == '__main__':
     
     app = app()
 
-    app.main()
+    app.isExist()

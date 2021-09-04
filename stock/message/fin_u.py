@@ -164,10 +164,17 @@ class app:
         # 新公告列表
         notice_new = []
 
-        # 公告请求
-        req = urllib.request.Request(url_ann, headers = headers)
-        # 获得网址内容
-        con = urllib.request.urlopen(req).read()
+        try:
+            # 公告请求
+            req = urllib.request.Request(url_ann, headers = headers)
+            # 获得网址内容
+            con = urllib.request.urlopen(req, timeout=5).read()
+        except:
+            # 公告请求
+            req = urllib.request.Request(url_ann, headers = headers)
+            # 获得网址内容
+            con = urllib.request.urlopen(req, timeout=5).read()
+
         # 获取内存中的二进制字节
         buff = BytesIO(con)
         # 解压
@@ -210,10 +217,17 @@ class app:
         # 新资讯列表
         news_new = []
 
-        # 公告请求
-        req = urllib.request.Request(url_cms, headers = headers)
-        # 获得网址内容
-        con = urllib.request.urlopen(req).read()
+        try:
+            # 公告请求
+            req = urllib.request.Request(url_cms, headers = headers)
+            # 获得网址内容
+            con = urllib.request.urlopen(req, timeout=5).read()
+        except:
+            # 公告请求
+            req = urllib.request.Request(url_cms, headers = headers)
+            # 获得网址内容
+            con = urllib.request.urlopen(req, timeout=5).read()
+            
         # 获取内存中的二进制字节
         buff = BytesIO(con)
         # 解压
@@ -357,7 +371,7 @@ class app:
             smtpserver = 'mail.pooper.tk'
             # 发送邮箱用户/密码
             user = 'admin'
-            password = '123456'
+            password = 'zzg4542431'
             # 发送邮箱
             sender = 'admin@pooper.tk'
             # 接收邮箱
@@ -393,7 +407,26 @@ class app:
 
         print("I am working now ......", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
-        # 一直循环
+        # 利用服务器的 crontab 进行定时运营
+        # centos7 中 name.txt 路径, name.txt中一行写一个股票名称，多个多行写，每行只写股票名称，不加其他内容
+        text_path = "/root/py/name.txt"
+
+        # 打开 name.txt 文件，读取内容，存入 stocks
+        with open(text_path, "r", encoding='utf-8') as f:
+            stocks = f.readlines()
+            f.close()
+
+        # 对读取的 stocks 的内容进行清洗，使之成为仅有股票名称的list
+        i = 0
+        while i < len(stocks):
+            # 取出每个名称中的空格，和换行符"\n"等
+            stocks[i] = stocks[i].strip()
+            i = i + 1
+
+        self.checkupdate(stocks)
+        
+        '''
+        # 一直循环,如果程序出错，将全部停止
         while True:
 
             # name.txt文件地址，windows测试地址
@@ -426,6 +459,7 @@ class app:
                 self.checkupdate(stocks)
                 # 每隔60分钟搜索一次
                 time.sleep(3600)
+        '''
                 
 # 主程序,运行
 if __name__ == '__main__':
