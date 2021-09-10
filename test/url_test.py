@@ -202,7 +202,7 @@ def to_0(data):
 def getzi():
     # 获取最新资讯和公告
 
-    stock = "大连圣亚"
+    stock = "火炬电子"
     # 资讯板块查找是否有最新                
     print(stock, ", Searching now ......", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
@@ -232,7 +232,7 @@ def getzi():
     # 资讯的参数
     param_cms = {
         "cb" : cb_con,
-        "keyword" : "大连圣亚", 
+        "keyword" : stock, 
         "type" : "8193", 
         "pageindex" : page,
         "pagesize" : "10",
@@ -368,14 +368,15 @@ def getzi():
         if news_date >= today_date:
 
             # 公告标题
-            news_title = re.search('"Art_Title":"(.+?)",', news)
+            news_title_em = re.search('"Art_Title":"(.+?)",', news)
+            news_title = news_title_em.group(1).replace("\\u003cem\\u003e", "").replace("\\u003c/em\\u003e", "")
             # 公告的网址
             news_link = re.search('"Art_UniqueUrl":"(.+?)",', news)
             # 公告的内容摘要
             news_content = re.findall('"Art_Content":"(.+?)"', news)
 
             # 写入内容中暂没包含 内容快照
-            news_new.append([news_title.group(1), news_link.group(1)])
+            news_new.append([news_title, news_link.group(1)])
 
     print(notice_new, news_new)
 
@@ -398,6 +399,6 @@ def trytest():
     print(con.getcode())
 
 if __name__ == '__main__':
-    trytest()
+    getzi()
 
 

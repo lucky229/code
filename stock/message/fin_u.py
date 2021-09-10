@@ -254,15 +254,18 @@ class app:
 
             if news_date >= today_date:
 
-                # 公告标题
-                news_title = re.search('"Art_Title":"(.+?)",', news)
+                # 公告标题 , 将名称中的 颜色 和 em 标签去掉
+                #news_title = re.search('"Art_Title":"(.+?)",', news)
+                news_title_em = re.search('"Art_Title":"(.+?)",', news)
+                news_title = news_title_em.group(1).replace("\\u003cem\\u003e", "").replace("\\u003c/em\\u003e", "")
                 # 公告的网址
                 news_link = re.search('"Art_UniqueUrl":"(.+?)",', news)
                 # 公告的内容摘要
                 news_content = re.findall('"Art_Content":"(.+?)"', news)
 
                 # 写入内容中暂没包含 内容快照
-                news_new.append([news_title.group(1), news_link.group(1)])
+                #news_new.append([news_title.group(1), news_link.group(1)])
+                news_new.append([news_title, news_link.group(1)])
 
         # 返回公告和资讯元组
         return (news_new, notice_new)
