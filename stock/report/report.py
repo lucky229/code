@@ -400,7 +400,8 @@ class StockAnalysis:
     def hangyefenxi(self, db, cursor, table_name, someday, top):
 
         # 行业分析统计的几个阶段
-        day_hangye = ["rate_d", "rate_5d", "rate_10d", "rate_22d", "rate_40d", "rate_65d", "rate_125d", "rate_250d"]
+        # "rate_d", "rate_5d", "rate_10d", "rate_22d", "rate_40d", "rate_65d", "rate_125d", "rate_250d"
+        day_hangye = ["rate_d", "rate_5d", "rate_22d", "rate_40d", "rate_65d", "rate_125d", "rate_250d"]
 
         # 统计前前100名行业排前五的行业情况
         order_looks = """select * from
@@ -558,10 +559,10 @@ class StockAnalysis:
                         最近125个交易日涨幅大于50%, 最近22个交易日涨幅大于30%, 股票上市时间大于半年。其中与上一交易日相比排名
                         上升大于10和新进入该排行榜的股票，均以 ※※ 进行标注。 </p>
                         <table border="1"><tr><th>序号</th><th>代码</th><th>股票名称</th><th>行业</th><th>当天涨幅</th>
-                        <th>22交易日涨幅</th><th>125交易日涨幅</th><th>22交易日涨幅排名变动</th></tr>""".format(str_day)
+                        <th>22交易日涨幅</th><th>125交易日涨幅</th><th>22交易日涨幅排名变动</th><th>22交易日出现次数</th></tr>""".format(str_day)
         # HTML表格代码
         table_td = """<tr><td>{0}</td><td><a href='{1}'>{2}</a></td><td><a href='{1}'>{3}</a></td><td>{4}</td>\
-                    <td>{5}%</td><td>{6}%</td><td>{7}%</td><td>{8}</td></tr>"""
+                    <td>{5}%</td><td>{6}%</td><td>{7}%</td><td>{8}</td><td>{9}</td></tr>"""
         
         # 存放取出的股票HTML代码
         st_mx = ""
@@ -626,9 +627,32 @@ class StockAnalysis:
                     if num_bef[0] - num_tod[0] > 10:
                         else_msg = else_msg + "   ※※"
 
+            # 最近22个交易日出现次数
+            # stock_times初始值为1， 表示今天筛选出； 计数器21，向前计算21个交易日，和今天一起22个交易日
+            stock_times = 1
+            bef_days = 1
+            # 循环计算最近22个交易日出现的次数
+            while bef_days < 22:
+                # 数据表名
+                table_bef_days_name = "stock" + self.beforeday(bef_days).strftime("%Y%m%d")
+                # 数据表内查询  股票是否在 bef_days 交易日前的筛选出的范围内
+                cursor.execute(order_look_order.format(table_bef_days_name, data_stock[i][1]))
+                stock_msg = cursor.fetchone()
+
+                # 统计出现次数
+                if stock_msg == None:
+                    pass
+                else:
+                    stock_times = stock_times + 1
+
+                # 计数器增加
+                bef_days = bef_days + 1
+
+
+
             # 构建股票信息元组
             tuple_stock = (i+1, stock_link, data_stock[i][1], data_stock[i][2], data_stock[i][3], data_stock[i][11], \
-                        data_stock[i][8], data_stock[i][5], else_msg)
+                        data_stock[i][8], data_stock[i][5], else_msg, stock_times)
             #print(tuple_stock)
 
             # 构建HTML表格代码
@@ -755,3 +779,4 @@ if __name__ == '__main__':
     
     app = StockAnalysis()
     app.operate_sql()
+    
