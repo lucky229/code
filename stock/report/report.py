@@ -695,7 +695,7 @@ class StockAnalysis:
                 bf_day = bf_day + datetime.timedelta(days = (-1))
                 
                 # 判断是否假期，是假期继续循环，不是跳出while
-                if bf_day.weekday() in [5, 6] or bf_day.weekday() in self.holiday:
+                if bf_day.weekday() in [5, 6] or bf_day in self.holiday:
                     pass
                 else:
                     break
