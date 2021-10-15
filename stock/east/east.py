@@ -320,7 +320,7 @@ class app:
         while True:
                                 
             # 判断是否假期，是假期继续循环，不是跳出while
-            if trade_day.weekday() in [5, 6] or trade_day.weekday() in self.holiday:
+            if trade_day.weekday() in [5, 6] or trade_day in self.holiday:
                 # 前一天
                 trade_day = trade_day + datetime.timedelta(days = (-1))
 
