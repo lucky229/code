@@ -11,9 +11,11 @@ int main()
 		jose[i] = 1;                      //从 1-N 标记 
 	
 	start = k;                            //第一次开始的位置 
-	for(int num=0; num<n; )               //以轮到的人数为循环 
+	num = 0; 
+	while(num<n)               //以轮到的人数为循环 
 	{
-		for(int j=0; j<m;)
+		int j = 0;
+		while(j<m)
 		{
 			if(jose[start]!=0)            //该位置的值不为0时 
 			{
@@ -22,7 +24,7 @@ int main()
 				{
 					num++;                //轮到的人数加 1
 					jose[start]=0;        //该处数值设置为 0 
-					cout<<start<<endl;    //输出该处的标号 
+					cout<<num<<" : "<<start<<endl;    //输出该处的标号 
 				}
 			}
 			start++;                      //轮动标记自动增加 
@@ -32,6 +34,5 @@ int main()
 			}
 		}
 	}
-		
 	return 0;
 }
