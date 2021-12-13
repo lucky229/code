@@ -1,40 +1,48 @@
+// 训练营 5 ：o 分解质因数 
 #include<bits/stdc++.h>
 using namespace std;
 
-int main()
+bool zs(int x)
 {
-	const long long aa=5e15;
-    string s1;
-    cin>>s1;
-
-    long long k, sum=0, len, up;
-    cin>>k;
-	len = s1.length(); 
-	for(int i=0; i<len; i++)
+	for(int i=2; i<x; i++)
 	{
-		if(s1[i]=='1')
+		if(x%i==0)
 		{
-			up = 1;
-		}
-		else
-		{
-			up =  pow(s1[i]-'0', aa);
-			cout<<up<<endl;
-		}
-		if(k==1)
-		{
-			cout<<s1[0];
-			break;
-		}
-		else
-		{
-			if(sum<k&&sum+up>=k)
-			{
-				cout<<s1[i];
-				break;
-			}
+			return false;
 		}
 	}
+	return true;
+}
+bool ys(int x, int y)
+{
+	if(y%x==0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
+int main()
+{
+	int a[10010], n, b;
+	cin>>n;
+	for(int i=1; i<=n; i++)
+	{
+		cin>>b;
+		a[i] = b;
+	}
+	for(int i=1;i<=n; i++)
+	{
+		for(int j=2; j<a[i]; j++)
+		{
+			if(zs(j)&&ys(j, a[i]))
+				cout<<j<<" ";
+		}
+		cout<<endl;
+	}
+	
     return 0;
 }

@@ -31,7 +31,14 @@ class StockAnalysis:
         # 假期，除周六和周日外的非交易日
         self.holiday = [datetime.date(2021, 9, 20), datetime.date(2021, 9, 21), datetime.date(2021, 10, 1), \
                         datetime.date(2021, 10, 4), datetime.date(2021, 10, 5), datetime.date(2021, 10, 6), \
-                        datetime.date(2021, 10, 7)]
+                        datetime.date(2021, 10, 7), datetime.date(2021, 11, 18), \
+                        # 2022年法定节假日
+                        datetime.date(2022, 1, 3), datetime.date(2022, 1, 31), datetime.date(2022, 2, 1), \
+                        datetime.date(2022, 2, 2), datetime.date(2022, 2, 3), datetime.date(2022, 2, 4), \
+                        datetime.date(2022, 4, 4), datetime.date(2022, 4, 5), datetime.date(2022, 5, 2), \
+                        datetime.date(2022, 5, 3), datetime.date(2022, 5, 4), datetime.date(2022, 6, 3), \
+                        datetime.date(2022, 9, 12), datetime.date(2022, 10, 3), datetime.date(2022, 10, 4), \
+                        datetime.date(2022, 10, 5), datetime.date(2022, 10, 6), datetime.date(2022, 10, 7)]
         # 创建统计区间变量和 表述的字典
         self.dic_day = {"rate_d":"当天", "rate_5d":"前 5个 交易日", "rate_10d":"前 10个 交易日", "rate_22d":"前 22个 交易日", \
                     "rate_40d":"前 40个 交易日", "rate_65d":"前 65个 交易日", "rate_125d":"前 125个 交易日", "rate_250d":"前 250个 交易日"}

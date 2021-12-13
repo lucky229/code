@@ -2,23 +2,36 @@
 using namespace std;
 int main()
 {
-	char a[100001];
-	int b,c[100001]={0};
-	cin.getline(a, sizeof(a));
-	b=strlen(a);
-	for(int i=0;i<b;i++)
+	string a, b, c, d, e;
+	a=b=c=d=e="No Data";
+	int n;
+	cin>>n;
+	
+	for(int i=0;i<n;i++)
 	{
-		for(int j=0;j<b;j++)
+		string s;
+		cin>>s;
+		if(s=="0"||s=="1")
 		{
-			if(a[i]!=a[j])
-				c[i]++;
+			a = s;
 		}
-		if(c[i]==b-1)
+		else if(s.size()==1&&(s[0]<'0'||s[0]>'9'))
 		{
-			cout<<a[i];
-			return 0;
+			d = s;
 		}
+		else
+		{
+			int idot=0, istr=0;
+			int slen = s.size();
+			for(int b=0; b< slen; b++)
+			{
+				if(s[b]=='.') idot++;
+				else if(s[0]<'0'||s[0]>'9') istr=1;
+			}
+			if(idot==0&&istr==0) b=s;
+			else if(idot==1&&istr==0) c=s;
+			else e=s;
+		}
+		return 0;
 	}
-	cout<<"no";
-	return 0;
 }
