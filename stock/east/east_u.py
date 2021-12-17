@@ -36,7 +36,14 @@ class app:
         # 假期，除周六和周日外的非交易日
         self.holiday = [datetime.date(2021, 9, 20), datetime.date(2021, 9, 21), datetime.date(2021, 10, 1), \
                         datetime.date(2021, 10, 4), datetime.date(2021, 10, 5), datetime.date(2021, 10, 6), \
-                        datetime.date(2021, 10, 7)]
+                        datetime.date(2021, 10, 7), \
+                        # 2022年法定节假日
+                        datetime.date(2022, 1, 3), datetime.date(2022, 1, 31), datetime.date(2022, 2, 1), \
+                        datetime.date(2022, 2, 2), datetime.date(2022, 2, 3), datetime.date(2022, 2, 4), \
+                        datetime.date(2022, 4, 4), datetime.date(2022, 4, 5), datetime.date(2022, 5, 2), \
+                        datetime.date(2022, 5, 3), datetime.date(2022, 5, 4), datetime.date(2022, 6, 3), \
+                        datetime.date(2022, 9, 12), datetime.date(2022, 10, 3), datetime.date(2022, 10, 4), \
+                        datetime.date(2022, 10, 5), datetime.date(2022, 10, 6), datetime.date(2022, 10, 7)]
         
     # 更换为分析地址方法，效率高些
     # 打开webdriver服务和chrome浏览器，放弃，效率太低

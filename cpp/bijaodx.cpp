@@ -1,38 +1,15 @@
-// 训练营 5 ：o 分解质因数 
+// 大乱斗 4  ：e 点蜡烛 
 #include<bits/stdc++.h>
 using namespace std;
 
-bool zs(int x)
-{
-	for(int i=2; i<x; i++)
-	{
-		if(x%i==0)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-bool ys(int x, int y)
-{
-	if(y%x==0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
+long long n, k, lz[100010]; 
 
 int main()
 {
-	int a[10010], n, b;
-	cin>>n;
+	cin>>n>>k;
 	for(int i=1; i<=n; i++)
 	{
-		cin>>b;
-		a[i] = b;
+		cin>>lz[i];
 	}
 	for(int i=1;i<=n; i++)
 	{
