@@ -1,25 +1,24 @@
-// ¥Û¬“∂∑ 4  £∫e µ„¿Ø÷Ú 
+// ¥Û¬“∂∑ 5  £∫f «–»¶»¶ 
 #include<bits/stdc++.h>
 using namespace std;
 
-long long n, k, lz[100010]; 
+long long t, n, nn, zs[20020], sum[20020]; 
 
 int main()
 {
-	cin>>n>>k;
+	cin>>t;
 	for(int i=1; i<=n; i++)
 	{
-		cin>>lz[i];
+		cin>>sz[i];
+		sz[i+n] = sz[i];		
 	}
-	for(int i=1;i<=n; i++)
+	sum[1] = sz[1];
+	nn = 2 * n;
+	for(int i=2; i<nn; i++)
 	{
-		for(int j=2; j<a[i]; j++)
-		{
-			if(zs(j)&&ys(j, a[i]))
-				cout<<j<<" ";
-		}
-		cout<<endl;
+		sum[i] = sum[i-1] + sz[i];
 	}
+	
 	
     return 0;
 }

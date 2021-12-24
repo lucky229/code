@@ -1,28 +1,40 @@
-// 训练营 5 ：T 求一些和 
+// 大乱斗 5 ：E 轨迹游戏 
 #include<bits/stdc++.h>
 using namespace std;
 
-int swh(int x)
+bool yx(int t, int x1, int y1, int x2, int y2)
 {
-	int ss=0;
-	ss = x/10000 + x/1000%10 + x/100%10 + x/10%10 + x%10;
-	
-	return ss;
+	int tt;
+	tt = abs(x1 - x2) + abs(y1 - y2);
+	if((tt == t) || ((tt < t) && (t-tt)%2==0))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 int main()
 {
-	int n, a, b, sum=0, s;
-	cin>>n>>a>>b;
+	int n, t, x, y, t0 = 0, x0 = 0, y0 = 0;
+	bool ans; 
+	cin>>n;
 	for(int i=1; i<=n; i++)
 	{
-		s = swh(i);
-		if(s>=a&&s<=b)
+		cin>>t>>x>>y;
+		ans = yx(t-t0, x0, y0, x, y);
+		if(ans==false)
 		{
-			sum = sum + i;
+			cout<<"No";
+			return 0;
 		}
+		t0 = t;
+		x0 = x;
+		y0 = y;
 	}
-	cout<<sum;
+	cout<<"Yes";
 	
     return 0;
 }

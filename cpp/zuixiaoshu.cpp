@@ -1,37 +1,29 @@
 #include<bits/stdc++.h>
 using namespace std;
+long long y[110];
+long long ys(int a)
+{
+	for(int i=1;i<=a;i++)
+	{
+		if(a%i==0)
+		{
+			cout<<i<<" ";
+		}
+	}
+	return 0;
+}
 int main()
 {
-	string a, b, c, d, e;
-	a=b=c=d=e="No Data";
-	int n;
-	cin>>n;
-	
-	for(int i=0;i<n;i++)
+	long long x;
+	cin>>x;
+	for(int i=0;i<x;i++)
 	{
-		string s;
-		cin>>s;
-		if(s=="0"||s=="1")
-		{
-			a = s;
-		}
-		else if(s.size()==1&&(s[0]<'0'||s[0]>'9'))
-		{
-			d = s;
-		}
-		else
-		{
-			int idot=0, istr=0;
-			int slen = s.size();
-			for(int b=0; b< slen; b++)
-			{
-				if(s[b]=='.') idot++;
-				else if(s[0]<'0'||s[0]>'9') istr=1;
-			}
-			if(idot==0&&istr==0) b=s;
-			else if(idot==1&&istr==0) c=s;
-			else e=s;
-		}
-		return 0;
+		cin>>y[i];
 	}
+	for(int i=0;i<x;i++)
+	{
+		ys(y[i]);
+		cout<<endl;
+	}
+	return 0;
 }
