@@ -32,7 +32,7 @@ class StockAnalysis:
         # 2021年11月18日没有导出数据，按节假日处理
         self.holiday = [datetime.date(2021, 9, 20), datetime.date(2021, 9, 21), datetime.date(2021, 10, 1), \
                         datetime.date(2021, 10, 4), datetime.date(2021, 10, 5), datetime.date(2021, 10, 6), \
-                        datetime.date(2021, 10, 7), datetime.date(2021, 11, 18), \
+                        datetime.date(2021, 10, 7), datetime.date(2021, 11, 18), datetime.date(2021, 12, 29),\
                         # 2022年法定节假日
                         datetime.date(2022, 1, 3), datetime.date(2022, 1, 31), datetime.date(2022, 2, 1), \
                         datetime.date(2022, 2, 2), datetime.date(2022, 2, 3), datetime.date(2022, 2, 4), \

@@ -1,24 +1,37 @@
-// ´óÂÒ¶· 5  £ºf ÇĞÈ¦È¦ 
+// ´óÂÒ¶· 6  £ºe ËÍÍâÂô 
 #include<bits/stdc++.h>
 using namespace std;
 
-long long t, n, nn, zs[20020], sum[20020]; 
+long long n, a[100010], all=0, ans; 
 
 int main()
 {
-	cin>>t;
+	cin>>n;
+	int s = 0;
 	for(int i=1; i<=n; i++)
 	{
-		cin>>sz[i];
-		sz[i+n] = sz[i];		
+		cin>>a[i];
+		all = all + abs(a[i] - s);
+		s = a[i];
 	}
-	sum[1] = sz[1];
-	nn = 2 * n;
-	for(int i=2; i<nn; i++)
+	all = all + abs(a[n]);
+
+	for(int i=1; i<=n; i++)
 	{
-		sum[i] = sum[i-1] + sz[i];
+		if(i==1)
+		{
+			ans = all - abs(a[i]) -abs(a[i+1] - a[i]) + abs(a[i+1]);
+		}
+		else if(i==n)
+		{
+			ans = all - abs(a[i] - a[i-1]) - abs(a[i]) + abs(a[i-1]);
+		}
+		else
+		{
+			ans = all - abs(a[i] - a[i-1]) - abs(a[i+1] - a[i]) + abs(a[i+1] - a[i-1]);
+		}
+		cout<<ans<<endl;
 	}
-	
 	
     return 0;
 }

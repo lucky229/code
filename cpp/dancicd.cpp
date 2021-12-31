@@ -1,40 +1,39 @@
-// ´óÂÒ¶· 5 £ºE ¹ì¼£ÓÎÏ· 
+// ´óÂÒ¶· 6 £ºF ¿òÂìÒÏ 
 #include<bits/stdc++.h>
 using namespace std;
 
-bool yx(int t, int x1, int y1, int x2, int y2)
-{
-	int tt;
-	tt = abs(x1 - x2) + abs(y1 - y2);
-	if((tt == t) || ((tt < t) && (t-tt)%2==0))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
+long long pminx, pmaxx, pminy, pmaxy, sminx, smaxx, sminy, smaxy;
+long long n, xx, yy, ans1, ans2, ans;
 
 int main()
-{
-	int n, t, x, y, t0 = 0, x0 = 0, y0 = 0;
-	bool ans; 
+{	
 	cin>>n;
 	for(int i=1; i<=n; i++)
 	{
-		cin>>t>>x>>y;
-		ans = yx(t-t0, x0, y0, x, y);
-		if(ans==false)
+		cin>>xx>>yy;
+		if(i == 1)
 		{
-			cout<<"No";
-			return 0;
+			pminx = pmaxx = xx;
+			pminy = pmaxy = yy;
+			sminx = smaxx = yy + xx;
+			sminy = smaxy = yy - xx;
 		}
-		t0 = t;
-		x0 = x;
-		y0 = y;
+		else
+		{
+			if(pminx > xx) pminx = xx;
+			if(pmaxx < xx) pmaxx = xx;
+			if(pminy > yy) pminy = yy;
+			if(pmaxy < yy) pmaxy = yy;
+			if(sminx > yy + xx) sminx = yy + xx;
+			if(smaxx < yy + xx) smaxx = yy + xx;
+			if(sminy > yy - xx) sminy = yy - xx;
+			if(smaxy < yy - xx) smaxy = yy - xx;
+		}
 	}
-	cout<<"Yes";
+	ans1 = pmaxx-pminx > pmaxy-pminy ? (pmaxx-pminx) * (pmaxx-pminx) : (pmaxy-pminy) *(pmaxy-pminy);
+	ans2 = smaxx-sminx > smaxy-sminy ? (smaxx-sminx) * (smaxx-sminx) / 2 : (smaxy-sminy) *(smaxy-sminy) / 2;
 	
+	ans = ans1 < ans2 ? ans1 : ans2;
+	cout<<ans;
     return 0;
 }
