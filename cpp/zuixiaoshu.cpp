@@ -1,29 +1,32 @@
 #include<bits/stdc++.h>
 using namespace std;
-long long y[110];
-long long ys(int a)
-{
-	for(int i=1;i<=a;i++)
-	{
-		if(a%i==0)
-		{
-			cout<<i<<" ";
-		}
-	}
-	return 0;
-}
+int n;
+queue<int>b,c;
+ 
 int main()
 {
-	long long x;
-	cin>>x;
-	for(int i=0;i<x;i++)
+	scanf("%d", &n);
+	int x = 1;
+	for(int i=1;i<=n;i++)
 	{
-		cin>>y[i];
+		printf("%d ", x);
+		b.push(2 * x + 1);
+		c.push(3 * x + 1);
+		if(b.front()<c.front())
+		{
+			x = b.front();
+			b.pop();
+		}
+		else
+		{
+			x = c.front();
+			c.pop();
+		}
+		if(b.front() == c.front())
+		{
+			b.pop();
+		}
 	}
-	for(int i=0;i<x;i++)
-	{
-		ys(y[i]);
-		cout<<endl;
-	}
+	
 	return 0;
 }

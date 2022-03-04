@@ -1,36 +1,23 @@
 // ´óÂÒ¶· 6  £ºe ËÍÍâÂô 
 #include<bits/stdc++.h>
 using namespace std;
-
-long long n, a[100010], all=0, ans; 
-
+queue<int> pai; 
 int main()
 {
+	int n, m, cnt=1;
 	cin>>n;
-	int s = 0;
 	for(int i=1; i<=n; i++)
 	{
-		cin>>a[i];
-		all = all + abs(a[i] - s);
-		s = a[i];
+		pai.push(i);
 	}
-	all = all + abs(a[n]);
-
-	for(int i=1; i<=n; i++)
+	while(pai.size()!=0)
 	{
-		if(i==1)
-		{
-			ans = all - abs(a[i]) -abs(a[i+1] - a[i]) + abs(a[i+1]);
-		}
-		else if(i==n)
-		{
-			ans = all - abs(a[i] - a[i-1]) - abs(a[i]) + abs(a[i-1]);
-		}
-		else
-		{
-			ans = all - abs(a[i] - a[i-1]) - abs(a[i+1] - a[i]) + abs(a[i+1] - a[i-1]);
-		}
-		cout<<ans<<endl;
+		cout<<pai.front()<<" ";
+		pai.pop();
+		m = pai.front();
+		pai.pop();
+		pai.push(m);
+
 	}
 	
     return 0;
