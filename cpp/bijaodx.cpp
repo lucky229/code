@@ -1,24 +1,49 @@
-// ´óÂÒ¶· 6  £ºe ËÍÍâÂô 
+// ÍØÕ¹2  £ºe À¬»øÏİÚå 
 #include<bits/stdc++.h>
 using namespace std;
-queue<int> pai; 
+struct cow
+{
+	int t, f, h;
+}a[110];
+
+bool cmp(cow a, cow b)
+{
+	return a.t < b.t;
+}
+
+int depth, n;
+int dp[110];
+
 int main()
 {
-	int n, m, cnt=1;
-	cin>>n;
+	cin>>depth>>n;
 	for(int i=1; i<=n; i++)
 	{
-		pai.push(i);
+		cin>>a[i].t>>a[i].f>>a[i].h;
 	}
-	while(pai.size()!=0)
+	sort(a+1, a+n+1, cmp);
+	dp[0] = 10;
+	for(int i=1; i<=n; i++)
 	{
-		cout<<pai.front()<<" ";
-		pai.pop();
-		m = pai.front();
-		pai.pop();
-		pai.push(m);
-
+		for(int j=depth; j>=0; j--)
+		{
+			if(dp[j] >= a[i].t)
+			{
+				if(a[i].h + j >= depth)
+				{
+					cout<<a[i].t<<endl;
+					return 0;
+				}
+				else
+				{
+					dp[j+a[i].h] = max(dp[j+a[i].h], dp[j]);
+					dp[j] += a[i].f;
+				}
+			}
+		}
 	}
+	
+	cout<<dp[0]<<endl;
 	
     return 0;
 }
