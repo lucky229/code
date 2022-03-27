@@ -1,49 +1,41 @@
 // ÍØÕ¹2  £ºe À¬»øÏİÚå 
 #include<bits/stdc++.h>
 using namespace std;
-struct cow
-{
-	int t, f, h;
-}a[110];
 
-bool cmp(cow a, cow b)
-{
-	return a.t < b.t;
-}
+int a[1024][1024];
 
-int depth, n;
-int dp[110];
+void solve(int k, int x, int y, int v)
+{
+	if(k==0)
+	{
+		a[x][y] = v;
+	}
+	else
+	{
+		int m = 1<<k-1;
+		solve(k-1, x, y, v);
+		solve(k-1, x, y+m, v+m);
+		solve(k-1, x+m, y, v+m);
+		solve(k-1, x+m, y+m, v);
+	}
+ } 
 
 int main()
 {
-	cin>>depth>>n;
-	for(int i=1; i<=n; i++)
-	{
-		cin>>a[i].t>>a[i].f>>a[i].h;
-	}
-	sort(a+1, a+n+1, cmp);
-	dp[0] = 10;
-	for(int i=1; i<=n; i++)
-	{
-		for(int j=depth; j>=0; j--)
-		{
-			if(dp[j] >= a[i].t)
-			{
-				if(a[i].h + j >= depth)
-				{
-					cout<<a[i].t<<endl;
-					return 0;
-				}
-				else
-				{
-					dp[j+a[i].h] = max(dp[j+a[i].h], dp[j]);
-					dp[j] += a[i].f;
-				}
-			}
-		}
-	}
+	int n, k;
+	scanf("%d", &k);
+	n = 1<<k;
 	
-	cout<<dp[0]<<endl;
+	solve(k, 1, 1, 1);
+	
+	for(int i=1; i<=n; i++)
+	{
+		for(int j=1; j<=n; j++)
+		{
+			printf("%d ", a[i][j]);
+		}
+		printf("\n");
+	}
 	
     return 0;
 }
