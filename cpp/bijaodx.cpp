@@ -1,31 +1,43 @@
 #include<bits/stdc++.h>
 using namespace std;
-
-int n, m, x, y;
-int f[30];
+int x,y,z;
+int a[210],b[210],c[210];
+int xx[210],xy[210];
+int f[210][210];
+bool d[210];
 int main()
 {
-	scanf("%d%d%d%d", &n, &m, &x, &y);
-	f[0] = 1;
-	for(int i=0; i<=n; i++)
+	scanf("%d%d%d",&x,&y,&z);
+	for(int i=1;i<=x;i++)
 	{
-		for(int j=0; j<=m; j++)
+		scanf("%d",&a[i]);
+	}
+	for(int i=1;i<=y;i++)
+	{
+		scanf("%d",&b[i]);
+	}
+	for(int i=1;i<=z;i++)
+	{
+		scanf("%d",&c[i]);
+	}
+	for(int i=1;i<=x;i++)
+	{
+		for(int j=1;j<=y;j++)
 		{
-			bool xy = (i==x&&j==y)||(i==x+1&&(j==y+2||j==y-2))||(i==x+2&&(j==y+1||j==y-1))||(i==x-1&&(j==y+2||j==y-2))||(i==x-2&&(j==y+1||j==y-1));
-			if(!xy)
+			for(int k=1;k<=z;k++)
 			{
-				if(j!=0)
+				if(a[i]==b[j]&&b[j]==c[k])
 				{
-					f[j] = f[j-1] + f[j];
-				}				
-			}
-			else
-			{
-				f[j] = 0;
-			}
-			//cout<<i<<" -- "<<j<<"  :  "<<f[j]<<endl;
+					f[j][k]=f[j][k-1]+1;
+				}
+				else
+				{
+					f[j][k]=max(f[j][k],max(f[j][k-1],f[j-1][k]));
+				} 
+				cout<<i<<" -- "<<j<<" -- "<<k<<" : "<<f[j][k]<<endl;
+			}				
 		}
 	}
-	printf("%d", f[m]);
+	printf("%d",f[y][z]);
 	return 0;
 }
