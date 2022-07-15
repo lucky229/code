@@ -38,6 +38,7 @@ class app:
                         datetime.date(2021, 10, 4), datetime.date(2021, 10, 5), datetime.date(2021, 10, 6), \
                         datetime.date(2021, 10, 7), \
                         # 2022年法定节假日
+                        datetime.date(2022, 7, 13), \
                         datetime.date(2022, 1, 3), datetime.date(2022, 1, 31), datetime.date(2022, 2, 1), \
                         datetime.date(2022, 2, 2), datetime.date(2022, 2, 3), datetime.date(2022, 2, 4), \
                         datetime.date(2022, 4, 4), datetime.date(2022, 4, 5), datetime.date(2022, 5, 2), \
